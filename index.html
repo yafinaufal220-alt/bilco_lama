@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilco.Handmade - Jajanan Pasar Autentik</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+    /* --- CSS Modal (Diperbarui agar Tombol Tetap di Bawah) --- */
+    .modal {
+        display: none; 
+        position: fixed; 
+        z-index: 3000; 
+        left: 0; top: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.6);
+        backdrop-filter: blur(5px);
+    }
+    .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        padding: 30px;
+        width: 90%;
+        max-width: 700px;
+        border-radius: 25px;
+        position: relative;
+        animation: zoomIn 0.3s ease;
+    }
+    @keyframes zoomIn {
+        from {transform: scale(0.8); opacity: 0;}
+        to {transform: scale(1); opacity: 1;}
+    }
+    .close-modal {
+        position: absolute;
+        right: 20px; top: 10px;
+        font-size: 35px; cursor: pointer;
+        color: #999;
+    }
+    .modal-body {
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+        align-items: stretch; /* MEMASTIKAN kolom kiri & kanan punya tinggi yang sama */
+    }
+    .modal-img { flex: 1; min-width: 250px; }
+    .modal-img img { width: 100%; border-radius: 15px; height: 100%; min-height: 250px; object-fit: cover; }
+    
+    .modal-info { 
+        flex: 1; 
+        min-width: 250px; 
+        display: flex; 
+        flex-direction: column; /* Mengatur susunan konten secara vertikal */
+    }
+
+    /* CONTAINER TEKS: Mengambil sisa ruang kosong untuk mendorong tombol */
+    .modal-info-content {
+        flex-grow: 1; 
+    }
+
+    .modal-info h2 { color: var(--sugar); margin-bottom: 5px; }
+    .modal-info .price { color: var(--sage); font-size: 22px; font-weight: 800; margin-bottom: 15px; }
+    
+    .modal-info p { 
+        color: #666; 
+        line-height: 1.6; 
+        font-size: 15px; 
+        text-align: justify; /* Rata kanan kiri */
+        margin-bottom: 20px;
+    }
+
+    /* PENEMPATAN TOMBOL: Menempel di dasar kontainer .modal-info */
+    .modal-info-action {
+        margin-top: auto; 
+        width: 100%;
+    }
+    .modal-info-action .btn-primary {
+        width: 100%;
+        border: none;
+        cursor: pointer;
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    /* --- CSS Carousel (Tanda Panah Tidak Menumpuk) --- */
+    .carousel-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 0 60px; 
+        box-sizing: border-box;
+    }
+    .grid {
+        display: flex !important;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        gap: 20px;
+        padding: 20px 5px;
+        scrollbar-width: none;
+        width: 100%;
+    }
+    .grid::-webkit-scrollbar { display: none; }
+
+    .card {
+        width: calc(25% - 15px);
+        min-width: calc(25% - 15px); 
+        flex-shrink: 0;
+    }
+
+    .nav-btn {
+        display: flex; 
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: white;
+        border: 1px solid #ddd;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 100;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        font-size: 20px;
+        transition: 0.3s;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .nav-btn:hover { background: #f9f9f9; transform: translateY(-50%) scale(1.1); }
+    
+    .prev-btn { left: 0; }
+    .next-btn { right: 0; }
+
+    @media (max-width: 1024px) {
+        .card {
+            width: calc(33.33% - 14px);
+            min-width: calc(33.33% - 14px);
+        }
+    }
+    @media (max-width: 768px) {
+        .carousel-wrapper { padding: 0; } 
+        .card { 
+            width: 80%;
+            min-width: 80%; 
+        }
+        .nav-btn { display: none !important; }
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="container nav-container">
+        <div class="logo">Bilco.<span>Handmade</span></div>
+        
+        <nav id="mainNav">
+            <a href="index.html" class="active">Beranda</a>
+            <a href="katalog.html">Katalog</a>
+            <a href="paket.html">Kue Paket</a>
+            <a href="tentang.html">Tentang Kami</a>
+        </nav>
+
+        <div class="nav-icons">
+            <a href="keranjang.html" style="text-decoration: none; color: inherit;">
+                <div class="cart-icon">🛒<span id="cart-count">0</span></div>
+            </a>
+
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <section class="hero">
+        <div class="hero-overlay">
+            <div class="hero-content">
+                <h1>Merangkai Rasa Dalam Budaya Indonesia</h1>
+                <p>Jajanan tradisional Indonesia premium dengan bahan alami, tanpa pengawet, dan dibuat fresh setiap hari.</p>
+                <div class="hero-btns">
+                    <a href="katalog.html" class="btn-primary" style="text-decoration:none">Pesan Satuan</a>
+                    <a href="paket.html" class="btn-secondary" style="text-decoration:none">Pesan Kue Paket</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="promo-bar">
+        <marquee>🔥 PROMO HARI INI:✨</marquee>
+    </div>
+
+<section style="background: white; padding: 80px 0; border-bottom: 1px solid #f0f0f0;">
+            <div class="container">
+                    <div style="text-align: center; margin-bottom: 50px;">
+                        <span style="color: var(--sage); font-weight: 700; letter-spacing: 2px; font-size: 12px; text-transform: uppercase;">Tentang Kami</span>
+                        <h2 style="font-size: 32px; color: var(--sugar); margin-top: 10px;">Mengapa Memilih Bilco Handmade?</h2>
+                        <p style="opacity: 0.7; max-width: 600px; margin: 15px auto 0;">Kami berkomitmen selalu menyajikan jajanan  tradisional Indonesia yang terbaik, mulai dari kualitas, rasa, dan tampilan kue yang istimewa.</p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; text-align: center;">
+            
+                <div style="padding: 10px;">
+                    <div style="margin-bottom: 15px;">
+                        <img src="./gambar/logo/Kelapa_Dan_Daun_Pandan_Ilustrasi_Objek_Klipart_Terisolasi__Kelapa__Pandan__Clipart_PNG_Transparan_Clipart_dan_File_PSD_untuk_Unduh_Gratis-removebg-preview.ico" alt="Bahan Alami" style="width: 50px; height: 50px; object-fit: contain;">
+                    </div>
+                    <h4 style="color: var(--sugar); margin-bottom: 10px; font-size: 16px;">100% Bahan Alami</h4>
+                    <p style="font-size: 13px; opacity: 0.8; line-height: 1.5;"> Kami hanya menggunakan bahan dan pewarna alami tanpa pengawet dan pemanis buatan.</p>
+                </div>
+
+                <div style="padding: 10px;">
+                    <div style="margin-bottom: 15px;">
+                        <img src="./gambar/logo/download__1_-removebg-preview.ico" alt="Handmade" style="width: 50px; height: 50px; object-fit: contain;">
+                    </div>
+                    <h4 style="color: var(--sugar); margin-bottom: 10px; font-size: 16px;">Handmade</h4>
+                    <p style="font-size: 13px; opacity: 0.8; line-height: 1.5;">Bukan hasil pabrikan semua jajanan dibuat fresh setiap hari untuk menjaga kualitas rasa.</p>
+                </div>
+
+                <div style="padding: 10px;">
+                    <div style="margin-bottom: 15px;">
+                        <img src="./gambar/logo/download-removebg-preview.ico" alt="Higienis" style="width: 50px; height: 50px; object-fit: contain;">
+                    </div>
+                    <h4 style="color: var(--sugar); margin-bottom: 10px; font-size: 16px;">Higienis</h4>
+                    <p style="font-size: 13px; opacity: 0.8; line-height: 1.5;">Kami selalu menjaga kualitas produk kami dengan menjaga kebersihan baik di tempat produksi dan pengerjaan semua produk (selalu memakai handglove selama pengerjaan produk).</p>
+                </div>
+
+                <div style="padding: 10px;">
+                    <div style="margin-bottom: 15px;">
+                        <img src="./gambar/logo/Five-day_kid_s_Worksheets-removebg-preview.ico" alt="Rasa Stabil" style="width: 50px; height: 50px; object-fit: contain;">
+                    </div>
+                    <h4 style="color: var(--sugar); margin-bottom: 10px; font-size: 16px;">Rasa yang Stabil</h4>
+                    <p style="font-size: 13px; opacity: 0.8; line-height: 1.5;">Kami selalu menggunakan takaran dan jenis bahan yang tidak pernah berubah untuk menjaga kualitas.</p>
+                </div>
+
+                <div style="padding: 10px;">
+                    <div style="margin-bottom: 15px;">
+                        <img src="./gambar/logo/Kala_s_Instagram_post___27_30_-_Kue_Lumpur__kuelumpur__kue__art__food__foodart__foodillustration__illustration__illustrator__drawing__traditionalfood__-removebg-preview.ico" alt="Tampilan Kue" style="width: 50px; height: 50px; object-fit: contain;">
+                    </div>
+                    <h4 style="color: var(--sugar); margin-bottom: 10px; font-size: 16px;">Tampilan Kue</h4>
+                    <p style="font-size: 13px; opacity: 0.8; line-height: 1.5;">Bagi kami kerapian dan komposisi warna menjadi hal yang utama untuk menyajikan tampilan istimewa.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <section class="container" style="padding: 80px 20px;">
+        <div style="text-align: center; margin-bottom: 50px;">
+            <span style="color: var(--sage); font-weight: 700; letter-spacing: 2px; font-size: 12px; text-transform: uppercase;">Favorit Pelanggan</span>
+            <h2 style="font-size: 36px; color: var(--sugar); margin-top: 10px;">Produk Terlaris</h2>
+            <div style="width: 50px; height: 3px; background: var(--sage); margin: 15px auto;"></div>
+        </div>
+        
+        <div class="carousel-wrapper">
+            <button class="nav-btn prev-btn" onclick="moveSlide(-1)">&#10094;</button>
+            <div class="grid" id="bestSellerGrid">
+                
+                <div class="card">
+                    <div class="tag-populer">Best Seller</div>
+                    <img src="./gambar/satuan/kue basah/manis/gethuk AI.png" alt="Gethuk Lindri">
+                    <div class="card-info" style="padding: 20px 0; text-align: center;">
+                        <h4>Gethuk Lindri</h4>
+                        <p style="color: var(--sage); font-weight: 800; font-size: 1.2rem;">Rp 4.500</p>
+                        <button class="btn-primary" style="width: 90%; margin-top: 15px; border:none; cursor:pointer;" 
+                            onclick="openDetail('Gethuk Lindri', 'Rp 4.500', './gambar/satuan/kue basah/manis/gethuk AI.png', 'Singkong pilihan yang dihaluskan dengan tekstur lembut dan kenyal, cocok disajikan dengan taburan kelapa parut gurih yang memberikan sensasi rasa manis-gurih khas tradisional.')">
+                            Lihat Detail
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="tag-populer">Best Seller</div>
+                    <img src="./gambar/satuan/kue basah/manis/putrimandi 2.jpeg" alt="Putri Mandi">
+                    <div class="card-info" style="padding: 20px 0; text-align: center;">
+                        <h4>Putri Mandi</h4>
+                        <p style="color: var(--sage); font-weight: 800; font-size: 1.2rem;">Rp 6.750</p>
+                        <button class="btn-primary" style="width: 90%; margin-top: 15px; border:none; cursor:pointer;" 
+                            onclick="openDetail('Putri Mandi', 'Rp 6.750', './gambar/satuan/kue basah/manis/putrimandi 2.jpeg', 'Bola-bola ketan warna-warni yang kenyal dengan isian unti kelapa manis, disiram dengan saus santan kental yang gurih dan lembut di mulut.')">
+                            Lihat Detail
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="tag-populer">Best Seller</div>
+                    <img src="./gambar/satuan/kue basah/manis/getas.jpeg" alt="Getas">
+                    <div class="card-info" style="padding: 20px 0; text-align: center;">
+                        <h4>Getas</h4>
+                        <p style="color: var(--sage); font-weight: 800; font-size: 1.2rem;">Rp 3.750</p>
+                        <button class="btn-primary" style="width: 90%; margin-top: 15px; border:none; cursor:pointer;" 
+                            onclick="openDetail('Getas', 'Rp 3.750', './gambar/satuan/kue basah/manis/getas.jpeg', 'jajanan tradisional khas Jawa berbentuk bulat, terbuat dari campuran tepung ketan, kelapa parut, dan santan yang digoreng, lalu dibalut gula pasir hingga renyah di luar dan lembut di dalam.')">
+                            Lihat Detail
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="tag-populer">Best Seller</div>
+                    <img src="./gambar/satuan/cake & pastry/cake utuh/proll tape AI.png" alt="Proll Tape">
+                    <div class="card-info" style="padding: 20px 0; text-align: center;">
+                        <h4>Proll Tape</h4>
+                        <p style="color: var(--sage); font-weight: 800; font-size: 1.2rem;">Rp 4.750</p>
+                        <button class="btn-primary" style="width: 90%; margin-top: 15px; border:none; cursor:pointer;" 
+                            onclick="openDetail('Proll Tape', 'Rp 4.750', './gambar/satuan/cake & pastry/cake utuh/proll tape AI.png', 'Kue olahan tape singkong kualitas premium yang padat namun lembut, memiliki perpaduan rasa manis dan sedikit asam khas tape.')">
+                            Lihat Detail
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="tag-populer">Best Seller</div>
+                    <img src="./gambar/satuan/cake & pastry/cake utuh/roll cherry 1.jpeg" alt="Roll Cherry">
+                    <div class="card-info" style="padding: 20px 0; text-align: center;">
+                        <h4>Roll Cherry</h4>
+                        <p style="color: var(--sage); font-weight: 800; font-size: 1.2rem;">Rp 5.000</p>
+                        <button class="btn-primary" style="width: 90%; margin-top: 15px; border:none; cursor:pointer;" 
+                            onclick="openDetail('Roll Cherry', 'Rp 5.000', './gambar/satuan/cake & pastry/cake utuh/roll cherry 1.jpeg', 'Bolu gulung cokelat mini yang lembut dengan vla putih dan hiasan ceri artistik.')">
+                            Lihat Detail
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="tag-populer">Best Seller</div>
+                    <img src="./gambar/satuan/kue basah/gurih/pastel ragout AI.png" alt="Pastel Ragout">
+                    <div class="card-info" style="padding: 20px 0; text-align: center;">
+                        <h4>Pastel Ragout</h4>
+                        <p style="color: var(--sage); font-weight: 800; font-size: 1.2rem;">Rp 6.500</p>
+                        <button class="btn-primary" style="width: 90%; margin-top: 15px; border:none; cursor:pointer;" 
+                            onclick="openDetail('Pastel Ragout', 'Rp 6.500', './gambar/satuan/kue basah/gurih/pastel ragout AI.png', 'Pastel dengan kulit super renyah dengan isian ragout ayam dan telur yang gurih nan lembut, pilihan sempurna untuk camilan berkualitas di setiap suasana.')">
+                            Lihat Detail
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="tag-populer">Best Seller</div>
+                    <img src="./gambar/satuan/kue basah/gurih/sosis solo AI.png" alt="Sosis Solo">
+                    <div class="card-info" style="padding: 20px 0; text-align: center;">
+                        <h4>Sosis Solo</h4>
+                        <p style="color: var(--sage); font-weight: 800; font-size: 1.2rem;">Rp 6.000</p>
+                        <button class="btn-primary" style="width: 90%; margin-top: 15px; border:none; cursor:pointer;" 
+                            onclick="openDetail('Sosis Solo', 'Rp 6.000', './gambar/satuan/kue basah/gurih/sosis solo AI.png', 'Camilan khas Solo berupa dadar telur lembut yang digulung dengan isian daging ayam suwir berbumbu gurih dan manis, kemudian digoreng hingga keemasan.')">
+                            Lihat Detail
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            <button class="nav-btn next-btn" onclick="moveSlide(1)">&#10095;</button>
+        </div>
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="katalog.html" style="color: var(--sugar); font-weight: 700; text-decoration: underline;">Lihat Semua Menu Satuan →</a>
+        </div>
+    </section>
+
+    <section style="background-color: var(--sage-light); padding: 80px 0;">
+        <div class="container">
+            <div style="display: flex; align-items: center; gap: 50px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px;">
+                    <img src="./gambar/logo/snack box beranda AI.png" alt="Snack Box" style="width: 100%; border-radius: 20px; box-shadow: 20px 20px 0 var(--white);">
+                </div>
+                <div style="flex: 1; min-width: 300px;">
+                    <h2 style="font-size: 32px; color: var(--sugar); line-height: 1.2;">Butuh Konsumsi untuk Acara Anda?</h2>
+                    <p style="margin: 20px 0; font-size: 18px; opacity: 0.9;">Kami melayani pesanan <strong>Snack Box</strong> untuk Rapat, Arisan, hingga Syukuran dengan kemasan yang cantik.</p>
+                    <ul style="list-style: none; margin-bottom: 30px;">
+                        <li style="margin-bottom: 12px;">✅ Bebas pilih kombinasi kue</li>
+                        <li style="margin-bottom: 12px;">✅ Tersedia opsi kartu ucapan custom</li>
+                        <li style="margin-bottom: 12px;">✅ Pengiriman tepat waktu & aman</li>
+                    </ul>
+                    <a href="paket.html" class="btn-primary" style="text-decoration: none;">Cek Pilihan Paket Box</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<footer>
+    <div class="container footer-grid">
+        <div class="footer-col">
+            <h2 class="logo" style="color: white; margin-bottom: 20px;">Bilco.<span>Handmade</span></h2>
+            <p>Membawa kehangatan jajanan tradisional ke dalam kemasan modern yang higienis dan elegan.</p>
+        </div>
+        
+        <div class="footer-col">
+            <h3>Navigasi</h3>
+            <ul>
+                <li><a href="index.html" class="active">Beranda</a></li>
+                <li><a href="katalog.html">Katalog</a></li>
+                <li><a href="paket.html">Kue Paket</a></li>
+                <li><a href="tentang.html">Tentang Kami</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h3>Hubungi Kami</h3>
+            <p style="display: flex; gap: 10px; align-items: flex-start;">
+                <img src="./gambar/logo/Google_Maps_Logo_PNG_Vector__CDR__Free_Download-removebg-preview.ico" width="18" height="20" alt="Maps" style="margin-top: 3px;">
+    
+                <a href="https://maps.app.goo.gl/TmbmC9aggNMb4cL8" target="_blank" style="text-decoration: none; color: inherit;">
+                <span>Perum Puri Majapahit, Jl. Jayanegara No.02 Blok D, Gatul, Banjaragung, Kec. Puri, Mojokerto.</span>
+                </a>
+            </p>
+
+            <p style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
+                <img src="./gambar/logo/Whatsapp_Icon_Whatsapp_Logo_Whatsapp_Icon_Free_Template__Whatsapp_Icons__Logo_Icons__Template_Icons_PNG_and_Vector_with_Transparent_Background_for_Free_Download-removebg-preview.ico" width="20" height="20" alt="WA">
+                <a href="https://wa.me/6282234618099" target="_blank" style="text-decoration: none; color: inherit;">0822-3461-8099</a>
+            </p>
+
+            <p style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
+                <img src="./gambar/logo/ig (1).ico" width="20" height="20" alt="IG">
+                <a href="https://instagram.com/bilco.handmade" target="_blank" style="text-decoration: none; color: inherit;">bilco.handmade</a>
+            </p>
+
+            <p style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
+                <img src="./gambar/logo/TikTok_Logo_Video_Tik_Tok_Sign_Symbol_Musically-removebg-preview (1).ico" width="20" height="20" alt="TikTok">
+                <a href="https://tiktok.com/@bilcohandmade" target="_blank" style="text-decoration: none; color: inherit;">bilcohandmade</a>
+            </p>
+        </div>
+
+        <div class="footer-col">
+            <h3>Jam Operasional</h3>
+            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; font-size: 14px; line-height: 1.6;">
+                <p>Senin - Sabtu: 08.00 - 17.00</p>
+                <p>Minggu: Tutup</p>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center; padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; margin-top: 30px; opacity: 0.7;">
+        &copy; 2026 Bilco.Handmade. Semua Hak Dilindungi.
+    </div>
+</footer>
+
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeDetail()">&times;</span>
+            <div class="modal-body">
+                <div class="modal-img">
+                    <img id="modalImg" src="" alt="Produk">
+                </div>
+                <div class="modal-info">
+                    <div class="modal-info-content">
+                        <h2 id="modalTitle">Nama Produk</h2>
+                        <p id="modalPrice" class="price">Rp 0</p>
+                        <p id="modalDesc">Deskripsi akan muncul di sini.</p>
+                    </div>
+                    <div class="modal-info-action">
+                        <button class="btn-primary" onclick="addToCart()">Tambah ke Keranjang</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="https://wa.me/6282234618099" class="wa-float">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA">
+        <span>Tanya Admin</span>
+    </a>
+
+    <script>
+        // 1. Inisialisasi Keranjang dari LocalStorage
+        let cart = JSON.parse(localStorage.getItem('bilcoCart')) || [];
+
+        // 2. Fungsi Menu Hamburger
+        function toggleMenu() {
+            const nav = document.querySelector("nav");
+            const hamburger = document.querySelector(".hamburger");
+            nav.classList.toggle("active");
+            hamburger.classList.toggle("active");
+        }
+
+        // 3. Fungsi Modal Detail
+        const modal = document.getElementById("productModal");
+        function openDetail(title, price, img, desc) {
+            document.getElementById("modalTitle").innerText = title;
+            document.getElementById("modalPrice").innerText = price;
+            document.getElementById("modalImg").src = img;
+            document.getElementById("modalDesc").innerText = desc;
+            modal.style.display = "block";
+        }
+
+        function closeDetail() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeDetail();
+            }
+        }
+
+        // 4. LOGIKA SISTEM KERANJANG
+        function updateCartBadge() {
+            const badge = document.getElementById('cart-count');
+            if (badge) {
+                const totalQty = cart.reduce((total, item) => total + item.qty, 0);
+                badge.innerText = totalQty;
+            }
+        }
+
+        function addToCart() {
+            const name = document.getElementById('modalTitle').innerText;
+            const priceText = document.getElementById('modalPrice').innerText;
+            const price = parseInt(priceText.replace(/[^0-9]/g, ''));
+            const img = document.getElementById('modalImg').src;
+
+            const existingItem = cart.find(item => item.name === name);
+
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({ name, price, img, qty: 1 });
+            }
+
+            localStorage.setItem('bilcoCart', JSON.stringify(cart));
+            updateCartBadge();
+            alert(name + " berhasil ditambahkan ke keranjang!");
+            closeDetail();
+        }
+
+        // 5. LOGIKA CAROUSEL
+        function moveSlide(direction) {
+            const grid = document.getElementById('bestSellerGrid');
+            const scrollAmount = grid.clientWidth;
+            grid.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' });
+        }
+
+        function checkCarousel() {
+            const grid = document.getElementById('bestSellerGrid');
+            const cards = grid.querySelectorAll('.card');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+
+            if (cards.length > 4) {
+                prevBtn.style.display = 'flex';
+                nextBtn.style.display = 'flex';
+            } else {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            }
+        }
+
+        // Jalankan saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartBadge();
+            checkCarousel();
+        });
+    </script>
+
+</body>
+</html>

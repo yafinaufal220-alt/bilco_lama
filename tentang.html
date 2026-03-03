@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tentang Kami - Bilco.Handmade</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+    /* --- CSS KHUSUS TENTANG KAMI --- */
+    .about-hero {
+        padding: 70px 15px 60px;
+        text-align: center;
+        background: var(--sage-light);
+    }
+
+    .about-container {
+        max-width: 1400px; 
+        margin: 0 auto;
+        padding: 60px 15px;
+    }
+
+    .story-section {
+        display: flex;
+        align-items: center;
+        gap: 50px;
+        margin-bottom: 80px;
+        flex-wrap: wrap;
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .story-img {
+        flex: 1;
+        min-width: 300px;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 20px 20px 0 var(--sage);
+    }
+
+    .story-img img {
+        width: 100%;
+        display: block;
+    }
+
+    .story-text {
+        flex: 1.2;
+        min-width: 300px;
+    }
+
+    /* FIX: Agar tidak terpotong saat hover */
+    .values-grid {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        /* Tambahkan padding atas agar kartu punya ruang untuk naik saat hover */
+        padding: 20px 10px; 
+        margin-top: 20px;
+        flex-wrap: nowrap;
+        /* Gunakan overflow-x: initial pada desktop agar hover bebas meluncur naik */
+        overflow-x: visible; 
+    }
+
+    .value-card {
+        background: white;
+        padding: 40px 30px;
+        border-radius: 25px;
+        text-align: center;
+        border: 1px solid #eee;
+        transition: 0.3s;
+        flex: 0 0 250px; 
+        min-height: 280px;
+        /* Tambahkan z-index agar bayangan/border hover di atas elemen lain */
+        position: relative;
+    }
+
+    .value-card:hover {
+        border-color: var(--sage);
+        transform: translateY(-10px); /* Sedikit lebih tinggi agar terlihat */
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+
+    .value-icon {
+        font-size: 40px;
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    .stats-section {
+        max-width: 1000px;
+        margin: 60px auto 0;
+        background: var(--sugar);
+        color: white;
+        padding: 60px 0;
+        border-radius: 40px;
+        display: flex;
+        justify-content: space-around;
+        text-align: center;
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+
+    .stat-item h2 { font-size: 40px; margin-bottom: 5px; }
+    .stat-item p { opacity: 0.8; font-size: 14px; }
+
+    /* Penyesuaian khusus layar kecil agar tetap bisa scroll tapi tidak potong atas */
+    @media (max-width: 1200px) {
+        .values-grid {
+            justify-content: flex-start;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .story-section { flex-direction: column-reverse; text-align: center; }
+        .story-img { box-shadow: 10px 10px 0 var(--sage); margin-top: 30px; }
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="container nav-container">
+        <div class="logo">Bilco.<span>Handmade</span></div>
+        
+        <nav id="mainNav">
+            <a href="index.html">Beranda</a>
+            <a href="katalog.html">Katalog</a>
+            <a href="paket.html">Kue Paket</a>
+            <a href="tentang.html" class="active">Tentang Kami</a>
+        </nav>
+
+        <div class="nav-icons">
+            <a href="keranjang.html" style="text-decoration: none; color: inherit;">
+                <div class="cart-icon">🛒<span id="cart-count">0</span></div>
+            </a>
+
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <section class="about-hero">
+        <div class="container">
+            <span style="color: var(--sage); font-weight: 700; letter-spacing: 2px;">OUR STORY</span>
+            <h1 style="color: var(--sugar); font-size: 42px; margin-top: 10px;">Merangkai Rasa Dalam Budaya Indonesia</h1>
+        </div>
+    </section>
+
+    <div class="about-container">
+        <section class="story-section">
+            <div class="story-text">
+                <h2 style="color: var(--sugar); margin-bottom: 20px;">Berawal dari Dapur Rumah</h2>
+                <p style="line-height: 1.8; color: #666; margin-bottom: 20px; text-align: justify;">
+                    Sebuah Dedikasi dari Jantung Mojokerto. Setiap mahakarya besar seringkali dimulai dari langkah sederhana. Bagi Bilco Handmade, cerita ini dimulai pada tahun 2003 di sebuah sudut kota kecil yang kaya akan sejarah, Mojokerto, Jawa Timur.
+                </p>
+                <p style="line-height: 1.8; color: #666; text-align: justify;">
+                    <strong>Bilco</strong> didirikan pada tahun 2003 berawal dari dapur rumahan dengan visi untuk mengangkat derajat kuliner tradisional. Sang pendiri berupaya membuktikan bahwa jajanan pasar bisa tampil berkelas dan premium melalui perhatian obsesif pada kualitas bahan, detail bentuk, serta resep warisan yang autentik.
+                </p>
+            </div>
+            <div class="story-img">
+                <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600" alt="Dapur Bilco">
+            </div>
+        </section>
+
+        <section style="text-align: center; margin-bottom: 80px;">
+            <h2 style="color: var(--sugar);">Kenapa Memilih Kami?</h2>
+            <div class="values-grid">
+                <div class="value-card">
+                    <span class="value-icon"><img src="./gambar/logo/Kelapa_Dan_Daun_Pandan_Ilustrasi_Objek_Klipart_Terisolasi__Kelapa__Pandan__Clipart_PNG_Transparan_Clipart_dan_File_PSD_untuk_Unduh_Gratis-removebg-preview.ico" alt="" style="width: 50px; height: 50px; object-fit: contain;"></span>
+                    <h3>100% Bahan Alami</h3>
+                    <p>Kami hanya menggunakan bahan dan pewarna alami tanpa pengawet dan pemanis buatan.</p>
+                </div>
+                <div class="value-card">
+                    <span class="value-icon"><img src="./gambar/logo/download__1_-removebg-preview.ico" alt="" style="width: 50px; height: 50px; object-fit: contain;"></span>
+                    <h3>Handmade</h3>
+                    <p>Bukan hasil pabrikan semua jajanan dibuat fresh setiap hari untuk menjaga kualitas rasa.</p>
+                </div>
+                <div class="value-card">
+                    <span class="value-icon"><img src="./gambar/logo/download-removebg-preview.ico" alt="" style="width: 50px; height: 50px; object-fit: contain;"></span>
+                    <h3>Higienis</h3>
+                    <p>Kami selalu menjaga kualitas produk kami dengan menjaga kebersihan baik di tempat produksi dan pengerjaan semua produk (selalu memakai handglove selama pengerjaan produk).</p>
+                </div>
+                <div class="value-card">
+                    <span class="value-icon"><img src="./gambar/logo/Five-day_kid_s_Worksheets-removebg-preview.ico" alt="" style="width: 50px; height: 50px; object-fit: contain;"></span>
+                    <h3>Rasa yang Stabil</h3>
+                    <p>Kami selalu menggunakan takaran dan jenis bahan yang tidak pernah berubah untuk menjaga kualitas.</p>
+                </div>
+                <div class="value-card">
+                    <span class="value-icon"><img src="./gambar/logo/Kala_s_Instagram_post___27_30_-_Kue_Lumpur__kuelumpur__kue__art__food__foodart__foodillustration__illustration__illustrator__drawing__traditionalfood__-removebg-preview.ico" alt="" style="width: 50px; height: 50px; object-fit: contain;"></span>
+                    <h3>Tampilan Kue</h3>
+                    <p>Bagi kami kerapian dan komposisi warna menjadi hal yang utama untuk menyajikan tampilan istimewa.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats-section">
+            <div class="stat-item">
+                <h2>500+</h2>
+                <p>Acara Terlayani</p>
+            </div>
+            <div class="stat-item">
+                <h2>100+</h2>
+                <p>Varian Jajanan</p>
+            </div>
+            <div class="stat-item">
+                <h2>100%</h2>
+                <p>Halal & Thoyyib</p>
+            </div>
+            <div class="stat-item">
+                <h2>4.9/5</h2>
+                <p>Rating Pelanggan</p>
+            </div>
+        </section>
+    </div>
+
+<footer>
+    <div class="container footer-grid">
+        <div class="footer-col">
+            <h2 class="logo" style="color: white; margin-bottom: 20px;">Bilco.<span>Handmade</span></h2>
+            <p>Membawa kehangatan jajanan tradisional ke dalam kemasan modern yang higienis dan elegan.</p>
+        </div>
+        
+        <div class="footer-col">
+            <h3>Navigasi</h3>
+            <ul>
+                <li><a href="index.html">Beranda</a></li>
+                <li><a href="katalog.html">Katalog</a></li>
+                <li><a href="paket.html">Kue Paket</a></li>
+                <li><a href="tentang.html" class="active">Tentang Kami</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h3>Hubungi Kami</h3>
+            <p style="display: flex; gap: 10px; align-items: flex-start;">
+                <img src="./gambar/logo/Google_Maps_Logo_PNG_Vector__CDR__Free_Download-removebg-preview.ico" width="18" height="20" alt="Maps" style="margin-top: 3px;">
+                <a href="https://maps.app.goo.gl/TmbmC9aggNMb4cL8" target="_blank" style="text-decoration: none; color: inherit;">
+                <span>Perum Puri Majapahit, Jl. Jayanegara No.02 Blok D, Gatul, Banjaragung, Kec. Puri, Mojokerto.</span>
+                </a>
+            </p>
+
+            <p style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
+                <img src="./gambar/logo/Whatsapp_Icon_Whatsapp_Logo_Whatsapp_Icon_Free_Template__Whatsapp_Icons__Logo_Icons__Template_Icons_PNG_and_Vector_with_Transparent_Background_for_Free_Download-removebg-preview.ico" width="20" height="20" alt="WA">
+                <a href="https://wa.me/6282234618099" target="_blank" style="text-decoration: none; color: inherit;">0822-3461-8099</a>
+            </p>
+
+            <p style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
+                <img src="./gambar/logo/ig (1).ico" width="20" height="20" alt="IG">
+                <a href="https://instagram.com/bilco.handmade" target="_blank" style="text-decoration: none; color: inherit;">bilco.handmade</a>
+            </p>
+
+            <p style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
+                <img src="./gambar/logo/TikTok_Logo_Video_Tik_Tok_Sign_Symbol_Musically-removebg-preview (1).ico" width="20" height="20" alt="TikTok">
+                <a href="https://tiktok.com/@bilcohandmade" target="_blank" style="text-decoration: none; color: inherit;">bilcohandmade</a>
+            </p>
+        </div>
+
+        <div class="footer-col">
+            <h3>Jam Operasional</h3>
+            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; font-size: 14px; line-height: 1.6;">
+                <p>Senin - Sabtu: 08.00 - 17.00</p>
+                <p>Minggu: Tutup</p>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center; padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; margin-top: 30px; opacity: 0.7;">
+        © 2026 Bilco.Handmade. Semua Hak Dilindungi.
+    </div>
+</footer>
+
+    <a href="https://wa.me/6282234618099" class="wa-float">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA">
+        <span>Tanya Admin</span>
+    </a>
+    <script>
+        let cart = JSON.parse(localStorage.getItem('bilcoCart')) || [];
+
+        function toggleMenu() {
+            const nav = document.getElementById("mainNav");
+            const hamburger = document.querySelector(".hamburger");
+            nav.classList.toggle("active");
+            hamburger.classList.toggle("active");
+        }
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cart-count');
+            if (badge) {
+                const totalQty = cart.reduce((total, item) => total + item.qty, 0);
+                badge.innerText = totalQty;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updateCartBadge);
+    </script>
+</body>
+</html>

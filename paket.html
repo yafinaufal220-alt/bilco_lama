@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paket Snack Box - Bilco.Handmade</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+    /* --- CSS KHUSUS PAKET SNACK BOX (ASLI) --- */
+    .package-header {
+        background: linear-gradient(rgba(244, 241, 234, 0.9), rgba(244, 241, 234, 0.9)), 
+                    url('https://thumbs.dreamstime.com/b/jajan-pasar-festive-various-colorful-traditional-indonesian-snack-280084213.jpg');
+        background-size: cover;
+        padding: 80px 0;
+        text-align: center;
+        transition: 0.3s;
+    }
+
+    /* 1. Aturan Dasar Grid (Sembunyi secara default) */
+    .package-grid {
+        display: none; 
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 40px 15px;
+        animation: fadeIn 0.4s ease;
+    }
+
+    /* Tampilkan hanya jika active */
+    .package-grid.active { display: grid; } 
+
+    @keyframes fadeIn {
+        from { opacity: 0; } to { opacity: 1; }
+    }
+
+    @media (min-width: 768px) {
+        .package-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .pkg-card {
+        background: white;
+        border-radius: 25px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: 0.3s;
+        border: 1px solid #eee;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    body.dark-mode .pkg-card {
+        background: var(--white);
+        border-color: rgba(255,255,255,0.1);
+    }
+
+    .pkg-card:hover { transform: translateY(-10px); }
+
+    .pkg-img {
+        height: 220px;
+        background-color: #f9f9f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .pkg-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        cursor: pointer; /* Menambah indikator klik */
+        transition: 0.3s ease;
+    }
+
+    .pkg-img img:hover { opacity: 0.9; }
+
+    .pkg-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: var(--sugar, #8D6E63);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        pointer-events: none; /* Badge tidak menghalangi klik gambar */
+    }
+
+    .pkg-content { 
+        padding: 25px; 
+        flex-grow: 1; 
+        display: flex;
+        flex-direction: column;
+    }
+
+    .pkg-price {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--sage, #7A9461);
+        margin: 10px 0;
+    }
+
+    .pkg-list {
+        margin: 20px 0;
+        padding: 0;
+        list-style: none;
+        text-align: left;
+    }
+
+    .pkg-list li {
+        padding: 8px 0;
+        border-bottom: 1px dashed #eee;
+        color: #666;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    body.dark-mode .pkg-list li {
+        color: #ccc;
+        border-bottom-color: rgba(255,255,255,0.1);
+    }
+
+    .pkg-list li::before { content: '✅'; font-size: 14px; }
+
+    .btn-order-wa {
+        display: block;
+        text-align: center;
+        background: #25D366;
+        color: white;
+        padding: 12px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+        margin-top: auto; 
+        transition: 0.3s;
+    }
+
+    .btn-order-wa:hover { opacity: 0.9; transform: scale(1.02); }
+
+    .tab-nav {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: -25px;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 100;
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        padding: 12px 20px;
+        border-radius: 50px;
+        border: none;
+        background: white;
+        color: #8D6E63;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: 0.3s;
+    }
+
+    .tab-btn.active {
+        background: #7A9461 !important; 
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(122, 148, 97, 0.3) !important;
+    }
+
+    .carousel-container {
+        position: relative;
+        max-width: 1500px;
+        margin: 50px auto;
+        padding: 0 60px; 
+        display: none; 
+        width: 100%;
+    }
+
+    @media (min-width: 769px) {
+        .package-grid.carousel-mode {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            scroll-behavior: smooth;
+            gap: 30px !important;
+            padding: 10px 0px !important;
+            grid-template-columns: none !important;
+            -ms-overflow-style: none;  
+            scrollbar-width: none;
+            justify-content: center; 
+        }
+
+        .package-grid.carousel-mode:has(.pkg-card:nth-child(4)) {
+            justify-content: flex-start;
+        }
+
+        .package-grid.carousel-mode::-webkit-scrollbar { display: none; }
+
+        .package-grid.carousel-mode .pkg-card {
+            flex: 0 0 calc(33.333% - 20px) !important; 
+            min-width: 300px; 
+            scroll-snap-align: start;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .carousel-container { 
+            padding: 0 15px; 
+            margin: 20px auto;
+        }
+        
+        .package-grid {
+            display: none !important; 
+        }
+
+        .package-grid.active,
+        .package-grid.active.carousel-mode { 
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 20px !important;
+            overflow: visible !important;
+            padding: 20px 0 !important;
+        }
+
+        .package-grid.active .pkg-card {
+            flex: 0 0 auto !important;
+            width: 100% !important;
+            min-width: unset !important;
+        }
+
+        .nav-arrow { display: none !important; } 
+    }
+
+    .nav-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 45px;
+        height: 45px;
+        background: white;
+        border-radius: 50%;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        cursor: pointer;
+        z-index: 10;
+        display: none; 
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s ease;
+        color: #8D6E63;
+    }
+
+    .nav-arrow:hover { background: #7A9461; color: white; }
+    .prev-btn { left: 0; }
+    .next-btn { right: 0; }
+
+    .pkg-card { display: flex; flex-direction: column; height: 100%; }
+    .pkg-content { display: flex; flex-direction: column; flex-grow: 1; padding: 25px; }
+    .pkg-list { flex-grow: 1; min-height: 180px; margin: 15px 0; }
+
+    /* --- CSS MODAL FULLSCREEN --- */
+    .img-fullscreen-modal {
+        display: none;
+        position: fixed;
+        z-index: 10000;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        align-items: center;
+        justify-content: center;
+        cursor: zoom-out;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .img-fullscreen-modal img {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 10px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        cursor: default;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        color: white;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<div id="imageModal" class="img-fullscreen-modal" onclick="this.style.display='none'">
+    <span class="close-modal">&times;</span>
+    <img id="modalImg" src="" alt="Fullscreen View">
+</div>
+
+<header>
+    <div class="container nav-container" style="height: 38px; display: flex; align-items: center; justify-content: space-between;">
+        <div class="logo" style="font-size: 24px; font-weight: 800; color: #8D6E63;">Bilco.<span style="color: #7A9461;">Handmade</span></div>
+        
+        <nav id="mainNav">
+            <a href="index.html">Beranda</a>
+            <a href="katalog.html">Katalog</a>
+            <a href="paket.html" class="active">Kue Paket</a>
+            <a href="tentang.html">Tentang Kami</a>
+        </nav>
+
+        <div class="nav-icons">
+            <a href="keranjang.html" style="text-decoration: none; color: inherit;">
+                <div class="cart-icon">🛒<span id="cart-count">0</span></div>
+            </a>
+
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="package-header">
+    <div class="container">
+        <h1 style="color: #8D6E63; font-size: 38px;">Paket Spesial</h1>
+        <p style="max-width: 600px; margin: 15px auto; color: #8D6E63; opacity: 0.8;">
+            Solusi praktis untuk acara kantor, arisan, atau syukuran. Dikemas elegan, higienis, dan pastinya lezat.
+        </p>
+    </div>
+</section>
+
+<div class="container">
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="openTab('snackbox', event)">Paket Snack Box</button>
+        <button class="tab-btn" onclick="openTab('nampan', event)">Paket Nampan</button>
+        <button class="tab-btn" onclick="openTab('tumpeng', event)">Paket Tumpeng</button>
+        <button class="tab-btn" onclick="openTab('tampah', event)">Paket Tampah</button>
+    </div>
+</div>
+
+<section class="container">
+<div class="carousel-container">
+    <button class="nav-arrow prev-btn" onclick="scrollGrid('snackbox', 'left')">❮</button>
+
+    <div id="snackbox" class="package-grid">
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/snack box/isi 4 AI.png" alt="Paket Hemat">
+                <div class="pkg-badge">Hemat</div>
+            </div>
+            <div class="pkg-content">
+                <h3 style="display: inline-block; margin-right: 5px;">Paket Snack Box Isi 4</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 25.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Gethuk</li>
+                    <li>Lemper</li>
+                    <li>Putri mandi</li>
+                    <li>Cantik Manis Mutiara</li>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Snack Box Isi 4" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/snack box/isi 6 AI.png" alt="Paket Premium">
+                <div class="pkg-badge" style="background: #7A9461;">Terlaris</div>
+            </div>
+            <div class="pkg-content">
+                <h3 style="display: inline-block; margin-right: 5px;">Paket Snack Box Isi 6</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 35.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Gethuk</li>
+                    <li>Kue Thok</li>
+                    <li>Puthu Ayu</li>
+                    <li>Getas</li>
+                    <li>Ketan Srikaya</li>
+                    <li>Proll Tape</li>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Snack Box Isi 6" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/snack box/sanck box + susu AI.png" alt="Paket Premium">
+                <div class="pkg-badge" style="background: #7A9461;">Terlaris</div>
+            </div>
+            <div class="pkg-content">
+                <h3 style="display: inline-block; margin-right: 5px;">Paket Snack Box Isi 3 + Susu</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 26.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Proll Tape</li>
+                    <li>Sentiling</li>
+                    <li>Lemper</li>
+                    <li>Susu</li>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Snack Box Isi 3 + Susu" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/snack box/mika isi 3 AI.png" alt="Paket Premium">
+                <div class="pkg-badge" style="background: #7A9461;">Terlaris</div>
+            </div>
+            <div class="pkg-content">
+                <h3 style="display: inline-block; margin-right: 5px;">Paket Mika Isi 3</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 17.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Pastel Ragout</li>
+                    <li>Truffle</li>
+                    <li>Proll Tape</li>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Mika Isi 3" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/snack box/mika isi 4 AI.png" alt="Paket Premium">
+                <div class="pkg-badge" style="background: #7A9461;">Terlaris</div>
+            </div>
+            <div class="pkg-content">
+                <h3 style="display: inline-block; margin-right: 5px;">Paket Mika Isi 4</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 25.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Lemper</li>
+                    <li>Gethuk</li>
+                    <li>Kue Thok</li>
+                    <li>Lumpia Sayur</li>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Mika Isi 4" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/snack box/mika isi 6 AI.png" alt="Paket Premium">
+                <div class="pkg-badge" style="background: #7A9461;">Terlaris</div>
+            </div>
+            <div class="pkg-content">
+                <h3 style="display: inline-block; margin-right: 5px;">Paket Mika Isi 6</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 35.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Lemper</li>
+                    <li>Gethuk</li>
+                    <li>Cake Redvelvet</li>
+                    <li>Kue Thok</li>
+                    <li>Putri Mandi</li>
+                    <li>Proll Tape</li>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Mika Isi 6" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/snack box/mika isi 8 AI.png" alt="Paket Premium">
+                <div class="pkg-badge" style="background: #7A9461;">Terlaris</div>
+            </div>
+            <div class="pkg-content">
+                <h3 style="display: inline-block; margin-right: 5px;">Paket Mika Isi 8</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 50.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Pastel Ragout (2pcs)</li>
+                    <li>Kue Kacamata (2pcs)</li>
+                    <li>Kue Thok (2pcs)</li>
+                    <li>Roll Mocca (2pcs)</li>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Mika Isi 8" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/snack box/mika + air mineral AI.png" alt="Paket Premium">
+                <div class="pkg-badge" style="background: #7A9461;">Terlaris</div>
+            </div>
+            <div class="pkg-content">
+                <h3 style="display: inline-block; margin-right: 5px;">Paket Mika Isi 3 + Air Mineral</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 21.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Sosis Solo</li>
+                    <li>Puthu Ayu</li>
+                    <li>Roll Pandan</li>
+                    <li>Air Mineral</li>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Mika Isi 3 + Air Mineral" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/snack box/kletikan AI.png" alt="Paket Premium">
+                <div class="pkg-badge" style="background: #7A9461;">Terlaris</div>
+            </div>
+            <div class="pkg-content">
+                <h3 style="display: inline-block; margin-right: 5px;">Paket Mika Isi 3 + Kletikan</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 17.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Roll Mocca</li>
+                    <li>Sentiling</li>
+                    <li>Macaroni Biterbalen</li>
+                    <li>Kacang Telur</li>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Mika Isi 3 + Kletikan" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+    </div>
+
+    <button class="nav-arrow next-btn" onclick="scrollGrid('snackbox', 'right')">❯</button>
+</div>    
+
+<div class="carousel-container">
+    <button class="nav-arrow prev-btn" onclick="scrollGrid('nampan', 'left')">❮</button>
+
+    <div id="nampan" class="package-grid">
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/nampan/mini AI 2.png" alt="Nampan">
+            </div>
+            <div class="pkg-content">
+                <h3>Paket Nampan Mini</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 70.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Cake Red Velvet</li>
+                    <li>Gethuk</li>
+                    <li>Talam Manis Jagung</li>
+                    <li>Pastel Ragout</li>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Nampan Mini" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/nampan/kecil AI.png" alt="Nampan">
+            </div>
+            <div class="pkg-content">
+                <h3>Paket Nampan Kecil</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 90.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Roll Strawberry</li>
+                    <li>Putri Mandi</li>
+                    <li>Gethuk</li>
+                    <li>Lemper</li>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Nampan Kecil" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/nampan/sedang AI 2.png" alt="Nampan">
+            </div>
+            <div class="pkg-content">
+                <h3>Paket Nampan Sedang</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 110.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Choco Peanut Roll Cake</li>
+                    <li>Gethuk</li>
+                    <li>Putri Mandi</li>
+                    <li>Cantik Manis Mutiara</li>
+                    <li>Talam Ayam</li>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Nampan Sedang" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/nampan/besar AI.png" alt="Nampan">
+            </div>
+            <div class="pkg-content">
+                <h3>Paket Nampan Besar</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 210.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Choco Peanut Roll Cake</li>
+                    <li>Orange Cake</li>
+                    <li>Lapis</li>
+                    <li>Gethuk</li>
+                    <li>Kue Thok</li>
+                    <li>Macaroni Biterbalen</li>
+                    <li>Lemper</li>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Nampan Besar" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div> 
+    </div>
+
+    <button class="nav-arrow next-btn" onclick="scrollGrid('nampan', 'right')">❯</button>
+</div>
+
+    <div id="tumpeng" class="package-grid">
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/tumpeng/paket A AI.png" alt="Tumpeng">
+            </div>
+            <div class="pkg-content">
+                <h3>Paket Tumpeng A</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 410.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Roll Cherry (6pcs)</li>
+                    <li>Roll Strawberry (6pcs)</li>
+                    <li>Kue Thok (8pcs)</li>
+                    <li>Putri Mandi 8(pcs)</li>
+                    <li>Lemper (8pcs)</li>
+                    <li>Sosis Solo (8pcs)</li>
+                    <br>
+                    <p>*NB: Varian Kue Bisa diganti dan Harga Menyesuaikan Isi</p>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Tumpeng A" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/tumpeng/paket b 2 AI.png" alt="Tumpeng">
+            </div>
+            <div class="pkg-content">
+                <h3>Paket Tumpeng B</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 520.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Gethuk (18pcs)</li>
+                    <li>Puthu Ayu (8pcs)</li>
+                    <li>Getas (8pcs)</li>
+                    <li>Putri Mandi (10pcs)</li>
+                    <li>Cenil singkong (10pcs)</li>
+                    <li>Lemper (10pcs)</li>
+                    <li>Risoles Ragout (10pcs)</li>
+                    <br>
+                    <p>*NB: Varian Kue Bisa diganti dan Harga Menyesuaikan Isi</p>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Tumpeng B" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/tumpeng/paket C AI.png" alt="Tumpeng">
+            </div>
+            <div class="pkg-content">
+                <h3>Paket Tumpeng C</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 1.100.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Gethuk (18pcs)</li>
+                    <li>Ketan Srikaya (12pcs)</li>
+                    <li>Kue Thok (14pcs)</li>
+                    <li>Cantik Manis Jagung (14pcs)</li>
+                    <li>Putri Mandi (12pcs)</li>
+                    <li>Proll Tape (12pcs)</li>
+                    <li>Sosis Solo (18pcs)</li>
+                    <li>Pastel Ragout (18pcs)</li>
+                    <li>Serawut (22pcs)</li>
+                    <li>Klepon (22pcs)</li>
+                    <br>
+                    <p>*NB: Varian Kue Bisa diganti dan Harga Menyesuaikan Isi</p>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Tumpeng C" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="tampah" class="package-grid">
+        <div class="pkg-card">
+            <div class="pkg-img">
+                <img src="./gambar/paket/tampah/tampah AI.png" alt="Tumpeng">
+            </div>
+            <div class="pkg-content">
+                <h3>Paket Tampah</h3>
+                <div class="price-wrapper" style="margin: 10px 0;">
+                    <span style="display: block; font-size: 13px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">rata-rata (harga bisa bervariasi)</span>
+                    <div class="pkg-price" style="margin: 0;">Rp 300.000</div>
+                </div>
+                <ul class="pkg-list">
+                    <li>Putri Mandi (6pcs)</li>
+                    <li>Gethuk (15pcs)</li>
+                    <li>Ketan Srikaya (8pcs)</li>
+                    <li>Getas (9pcs)</li>
+                    <li>Kue Thok (7pcs)</li>
+                    <li>Sosis Solo (10pcs)</li>
+                    <br>
+                    <p>*NB: Varian Kue Bisa diganti dan Harga Menyesuaikan Isi</p>
+                </ul>
+                <a href="https://wa.me/6282234618099?text=Halo Admin, saya ingin pesan Paket Tampah" class="btn-order-wa">Pesan via WhatsApp</a>
+            </div>
+        </div>
+    </div>
+
+    <div style="background: #E9EDC9; padding: 40px; border-radius: 25px; margin-bottom: 80px; text-align: center; border: 1px solid #7A9461;">
+        <h3 style="color: #8D6E63;">Mau Custom Isian Sendiri?</h3>
+        <p style="margin: 10px 0 20px; color: #8D6E63;">Kami melayani custom isian sesuai budget dan selera Anda.</p>
+        <a href="https://wa.me/6282234618099" class="btn-primary" style="display: inline-block; text-decoration: none; background: #7A9461; color: white; padding: 12px 25px; border-radius: 10px; font-weight: 700;">Konsultasi Gratis Sekarang</a>
+    </div>
+</section>
+
+    <a href="https://wa.me/6282234618099" class="wa-float">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA">
+        <span>Tanya Admin</span>
+    </a>
+
+    
+<footer>
+    <div class="container footer-grid">
+        <div class="footer-col">
+            <h2 class="logo" style="color: white; margin-bottom: 20px;">Bilco.<span>Handmade</span></h2>
+            <p>Membawa kehangatan jajanan tradisional ke dalam kemasan modern yang higienis dan elegan.</p>
+        </div>
+        
+        <div class="footer-col">
+            <h3>Navigasi</h3>
+            <ul>
+                <li><a href="index.html" class="active">Beranda</a></li>
+                <li><a href="katalog.html">Katalog</a></li>
+                <li><a href="paket.html">Kue Paket</a></li>
+                <li><a href="tentang.html">Tentang Kami</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h3>Hubungi Kami</h3>
+            <p style="display: flex; gap: 10px; align-items: flex-start;">
+                <img src="./gambar/logo/Google_Maps_Logo_PNG_Vector__CDR__Free_Download-removebg-preview.ico" width="18" height="20" alt="Maps" style="margin-top: 3px;">
+                <a href="https://maps.app.goo.gl/TmbmC9aggNMb4cL8" target="_blank" style="text-decoration: none; color: inherit;">
+                <span>Perum Puri Majapahit, Jl. Jayanegara No.02 Blok D, Gatul, Banjaragung, Kec. Puri, Mojokerto.</span>
+                </a>
+            </p>
+
+            <p style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
+                <img src="./gambar/logo/Whatsapp_Icon_Whatsapp_Logo_Whatsapp_Icon_Free_Template__Whatsapp_Icons__Logo_Icons__Template_Icons_PNG_and_Vector_with_Transparent_Background_for_Free_Download-removebg-preview.ico" width="20" height="20" alt="WA">
+                <a href="https://wa.me/6282234618099" target="_blank" style="text-decoration: none; color: inherit;">0822-3461-8099</a>
+            </p>
+
+            <p style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
+                <img src="./gambar/logo/ig (1).ico" width="20" height="20" alt="IG">
+                <a href="https://instagram.com/bilco.handmade" target="_blank" style="text-decoration: none; color: inherit;">bilco.handmade</a>
+            </p>
+
+            <p style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
+                <img src="./gambar/logo/TikTok_Logo_Video_Tik_Tok_Sign_Symbol_Musically-removebg-preview (1).ico" width="20" height="20" alt="TikTok">
+                <a href="https://tiktok.com/@bilcohandmade" target="_blank" style="text-decoration: none; color: inherit;">bilcohandmade</a>
+            </p>
+        </div>
+
+        <div class="footer-col">
+            <h3>Jam Operasional</h3>
+            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; font-size: 14px; line-height: 1.6;">
+                <p>Senin - Sabtu: 08.00 - 17.00</p>
+                <p>Minggu: Tutup</p>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center; padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; margin-top: 30px; opacity: 0.7;">
+        © 2026 Bilco.Handmade. Semua Hak Dilindungi.
+    </div>
+</footer>
+
+<script>
+// fungsi keranjang
+let cart = JSON.parse(localStorage.getItem('bilcoCart')) || [];
+
+    function toggleMenu() {
+        const nav = document.getElementById("mainNav");
+        const hamburger = document.querySelector(".hamburger");
+        nav.classList.toggle("active");
+        hamburger.classList.toggle("active");
+    }
+
+    function updateCartBadge() {
+        const badge = document.getElementById('cart-count');
+        if (badge) {
+            const totalQty = cart.reduce((total, item) => total + item.qty, 0);
+            badge.innerText = totalQty;
+        }
+    }
+
+    // FUNGSI KLIK GAMBAR UNTUK FULLSCREEN
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.pkg-img img')) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImg');
+            modal.style.display = 'flex';
+            modalImg.src = e.target.src;
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', updateCartBadge);
+    
+function openTab(tabName, event) {
+    const allContainers = document.querySelectorAll('.carousel-container');
+    allContainers.forEach(container => {
+        container.style.display = 'none';
+    });
+
+    const allGrids = document.querySelectorAll('.package-grid');
+    allGrids.forEach(grid => grid.classList.remove('active'));
+
+    const allBtns = document.querySelectorAll('.tab-btn');
+    allBtns.forEach(btn => btn.classList.remove('active'));
+
+    const targetGrid = document.getElementById(tabName);
+    if (targetGrid) {
+        targetGrid.classList.add('active');
+        
+        const parentWrap = targetGrid.closest('.carousel-container');
+        if (parentWrap) {
+            parentWrap.style.display = 'block';
+            
+            const cards = targetGrid.querySelectorAll('.pkg-card');
+            
+            if (cards.length > 3) {
+                targetGrid.style.display = 'flex';
+                targetGrid.classList.add('carousel-mode');
+                
+                const arrows = parentWrap.querySelectorAll('.nav-arrow');
+                arrows.forEach(a => a.style.display = 'flex');
+            } else {
+                targetGrid.style.display = 'grid';
+                targetGrid.classList.remove('carousel-mode');
+                
+                const arrows = parentWrap.querySelectorAll('.nav-arrow');
+                arrows.forEach(a => a.style.display = 'none');
+            }
+        }
+    }
+
+    if (event) {
+        if (event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        } else if (event.classList) {
+            event.classList.add('active');
+        }
+    }
+
+    setTimeout(refreshCardSizes, 10);
+}
+
+function refreshCardSizes() {
+    const activeGrid = document.querySelector('.package-grid.active');
+    if (!activeGrid) return;
+
+    const cards = activeGrid.querySelectorAll('.pkg-card');
+    let maxHeight = 0;
+
+    cards.forEach(card => {
+        card.style.height = 'auto';
+    });
+
+    cards.forEach(card => {
+        if (card.offsetHeight > maxHeight) maxHeight = card.offsetHeight;
+    });
+
+    cards.forEach(card => {
+        card.style.height = maxHeight + 'px';
+    });
+}
+
+function scrollGrid(gridId, direction) {
+    const grid = document.getElementById(gridId);
+    const scrollAmount = grid.clientWidth / 2;
+    if (direction === 'left') {
+        grid.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else {
+        grid.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof updateCartBadge === "function") updateCartBadge();
+    
+    const firstTabBtn = document.querySelector('.tab-btn');
+    if (firstTabBtn) {
+        const tabTarget = firstTabBtn.getAttribute('onclick').match(/'([^']+)'/)[1];
+        openTab(tabTarget, firstTabBtn);
+    }
+    
+    window.addEventListener('resize', refreshCardSizes);
+});
+</script>
+</body>
+</html>
